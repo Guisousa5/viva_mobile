@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+body {
+    font-family: 'Montserrat', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #0f0f0f;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.curve-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    width: 100vw;
+    height: 120px;
+    z-index: 0;
+    pointer-events: none;
+}
+.curve-bg svg {
+    width: 100vw;
+    height: 120px;
+    display: block;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 32px 8px 16px 8px;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin: 36px 0 8px 0;
+    letter-spacing: 1px;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 2px 16px #5a5af7cc;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #bdbdfc;
+    margin-bottom: 32px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.button-group {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-bottom: 32px;
+}
+
+.viva-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    padding: 26px 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 38px;
+    background: linear-gradient(90deg, #5a5af7 0%, #8f5cff 100%);
+    color: #fff;
+    box-shadow: 0 6px 32px 0 #5a5af733, 0 1.5px 0 #fff1;
+    cursor: pointer;
+    transition: 
+        background 0.4s cubic-bezier(.4,0,.2,1),
+        transform 0.12s cubic-bezier(.4,0,.2,1),
+        box-shadow 0.25s,
+        filter 0.2s;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+    filter: drop-shadow(0 0 0 #fff0);
+}
+
+.viva-btn.voice {
+    background: linear-gradient(90deg, #00e0ff 0%, #5a5af7 100%);
+    box-shadow: 0 6px 32px 0 #00e0ff33, 0 1.5px 0 #fff1;
+}
+.viva-btn.camera {
+    background: linear-gradient(90deg, #8f5cff 0%, #5a5af7 100%);
+    box-shadow: 0 6px 32px 0 #8f5cff33, 0 1.5px 0 #fff1;
+}
+.viva-btn.send {
+    background: linear-gradient(90deg, #00ffb8 0%, #00e0ff 100%);
+    color: #0f0f0f;
+    box-shadow: 0 6px 32px 0 #00ffb833, 0 1.5px 0 #fff1;
+}
+.viva-btn.cancel {
+    background: linear-gradient(90deg, #ff3b3b 0%, #8f5cff 100%);
+    color: #fff;
+    box-shadow: 0 6px 32px 0 #ff3b3b33, 0 1.5px 0 #fff1;
+}
+
+.viva-btn:active,
+.viva-btn:focus-visible {
+    transform: scale(0.97);
+    box-shadow: 0 0 0 4px #fff3, 0 6px 32px 0 #5a5af7cc;
+    filter: drop-shadow(0 0 16px #5a5af7cc);
+}
+
+.viva-btn .icon {
+    font-size: 1.7em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.viva-btn:active .icon,
+.viva-btn:focus-visible .icon {
+    transform: scale(1.18) rotate(-8deg);
+}
+
+.viva-input {
+    width: 100%;
+    max-width: 420px;
+    min-height: 56px;
+    margin: 0 auto 18px auto;
+    border: none;
+    border-radius: 28px;
+    padding: 18px 22px;
+    font-size: 1.1rem;
+    background: #181828;
+    color: #fff;
+    box-shadow: 0 2px 12px #5a5af71a;
+    outline: none;
+    resize: none;
+    transition: box-shadow 0.2s;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+.viva-input:focus {
+    box-shadow: 0 0 0 3px #5a5af7cc, 0 2px 12px #5a5af71a;
+}
+
+.caption-feedback {
+    margin-top: 16px;
+    font-size: 1.13rem;
+    text-align: center;
+    color: #fff;
+    background: #181828;
+    border-radius: 28px;
+    box-shadow: 0 2px 24px #5a5af71a;
+    padding: 22px 16px;
+    min-height: 56px;
+    max-width: 420px;
+    width: 100%;
+    word-break: break-word;
+    letter-spacing: 0.5px;
+    transition: box-shadow 0.2s;
+}
+
+@media (max-width: 600px) {
+    body {
+        font-size: 16px;
+    }
+    .container {
+        padding: 12vw 2vw 6vw 2vw;
+        min-height: 100vh;
+    }
+    h1 {
+        font-size: 1.25rem;
+        margin: 18vw 0 4vw 0;
+        text-shadow: 0 1px 8px #5a5af7cc;
+    }
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 7vw;
+    }
+    .button-group {
+        gap: 7vw;
+        margin-bottom: 7vw;
+        max-width: 98vw;
+    }
+    .viva-btn {
+        font-size: 1.05rem;
+        padding: 6vw 0;
+        border-radius: 48px;
+        min-height: 56px;
+        box-shadow: 0 2vw 8vw 0 #5a5af733, 0 0.5vw 0 #fff1;
+    }
+    .viva-btn .icon {
+        font-size: 2.2em;
+    }
+    .viva-input {
+        font-size: 1rem;
+        padding: 4vw 4vw;
+        min-height: 44px;
+        border-radius: 32px;
+        max-width: 98vw;
+    }
+    .caption-feedback {
+        font-size: 1rem;
+        padding: 4vw 3vw;
+        min-height: 44px;
+        border-radius: 28px;
+        max-width: 98vw;
+    }
+    .curve-bg {
+        height: 18vw;
+    }
+    .curve-bg svg {
+        height: 18vw;
+    }
+}
+
+/* Extra: para telas muito pequenas */
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1rem;
+    }
+    .viva-btn {
+        font-size: 0.95rem;
+        padding: 5vw 0;
+        min-height: 44px;
+    }
+}

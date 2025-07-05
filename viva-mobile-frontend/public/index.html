@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIVA Vision</title>
+    <link rel="stylesheet" href="../src/css/style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="curve-bg">
+        <svg viewBox="0 0 400 120" preserveAspectRatio="none">
+            <path d="M0,0 Q200,80 400,0 L400,120 L0,120 Z" fill="#1a1a2e"/>
+            <path d="M0,0 Q200,100 400,0 L400,120 L0,120 Z" fill="#5a5af7" fill-opacity="0.08"/>
+        </svg>
+    </div>
+    <main class="container">
+        <h1>VIVA Vision</h1>
+        <p class="subtitle">Assistente digital acessível e inteligente</p>
+        <section class="button-group">
+            <button class="viva-btn voice" id="mic-button" aria-label="Falar com o Viva">
+                <span class="icon">
+                    <!-- Microphone SVG -->
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+                </span>
+                Falar
+            </button>
+            <button class="viva-btn camera" id="camera-button" aria-label="Descrever ambiente">
+                <span class="icon">
+                    <!-- Camera SVG -->
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-3h6l2 3h3a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </span>
+                Descrever
+            </button>
+            <button class="viva-btn send" id="send-button" aria-label="Enviar texto">
+                <span class="icon">
+                    <!-- Send SVG -->
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </span>
+                Enviar texto
+            </button>
+            <button class="viva-btn cancel" id="cancel-button" aria-label="Cancelar interação">
+                <span class="icon">
+                    <!-- X SVG -->
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </span>
+                Cancelar
+            </button>
+        </section>
+        <textarea id="user-input" class="viva-input" placeholder="Digite sua pergunta..."></textarea>
+        <div id="response-area" class="caption-feedback" aria-live="polite"></div>
+    </main>
+    <script src="../src/js/main.js"></script>
+</body>
+</html>
