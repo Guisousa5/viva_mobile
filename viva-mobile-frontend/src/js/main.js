@@ -1,7 +1,7 @@
 // File: /viva-mobile-frontend/viva-mobile-frontend/src/js/main.js
 
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "http://localhost:8000"; // ajuste se necessário
+    const API_URL = "https://api-viva-vision.onrender.com"; // ajuste se necessário
 
     const micBtn = document.getElementById('mic-button');
     const cameraBtn = document.getElementById('camera-button');
