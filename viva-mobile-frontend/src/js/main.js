@@ -1,10 +1,11 @@
 // File: /viva-mobile-frontend/viva-mobile-frontend/src/js/main.js
 
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "https://api-viva-vision.onrender.com"; // ajuste se necessário
+    const API_URL = "https://api-viva-vision.onrender.com" // ajuste se necessário
 
     const micBtn = document.getElementById('mic-button');
     const cameraBtn = document.getElementById('camera-button');
+    const sendBtn = document.getElementById('send-button');
     const cancelBtn = document.getElementById('cancel-button');
     const userInput = document.getElementById('user-input');
     const responseArea = document.getElementById('response-area');
@@ -53,10 +54,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // Envio ao clicar no botão de enviar
+    sendBtn.addEventListener('click', sendPergunta);
+
     async function sendPergunta() {
         const pergunta = userInput.value.trim();
         if (!pergunta) return;
         responseArea.textContent = "Pensando...";
+        responseArea.classList.add('thinking'); // ADICIONA ANIMAÇÃO
+        sendBtn.classList.add('active');
         try {
             const res = await fetch(`${API_URL}/chat`, {
                 method: "POST",
@@ -65,10 +71,13 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             const data = await res.json();
             responseArea.textContent = data.resposta || "Sem resposta.";
+            responseArea.classList.remove('thinking'); // REMOVE ANIMAÇÃO
             speak(data.resposta || "");
         } catch (e) {
             responseArea.textContent = "Erro ao conectar ao assistente.";
+            responseArea.classList.remove('thinking');
         }
+        sendBtn.classList.remove('active');
     }
 
     // Botão cancelar: limpa tudo e cancela fala/voz
