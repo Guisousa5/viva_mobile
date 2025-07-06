@@ -1,7 +1,9 @@
 // File: /viva-mobile-frontend/viva-mobile-frontend/src/js/main.js
 
+// Fala automática no Android/desktop, botão "Ouvir resposta" no iPhone/iPad
+
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "https://api-viva-vision.onrender.com" // ajuste se necessário
+    const API_URL = "https://api-viva-vision.onrender.com"; // ajuste se necessário
 
     const micBtn = document.getElementById('mic-button');
     const cameraBtn = document.getElementById('camera-button');
@@ -9,6 +11,31 @@ document.addEventListener("DOMContentLoaded", function() {
     const cancelBtn = document.getElementById('cancel-button');
     const userInput = document.getElementById('user-input');
     const responseArea = document.getElementById('response-area');
+    let listenBtn = document.getElementById('listen-btn');
+
+    // Detecta iOS
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+    // Cria botão "Ouvir resposta" se não existir
+    if (!listenBtn) {
+        listenBtn = document.createElement('button');
+        listenBtn.id = "listen-btn";
+        listenBtn.className = "viva-btn send";
+        listenBtn.style.display = "none";
+        listenBtn.style.marginTop = "10px";
+        listenBtn.setAttribute("aria-label", "Ouvir resposta");
+        listenBtn.innerHTML = `
+            <span class="icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                </svg>
+            </span>
+            Ouvir resposta
+        `;
+        responseArea.insertAdjacentElement('afterend', listenBtn);
+    }
 
     // Fala (Speech Synthesis)
     function speak(text) {
@@ -63,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function() {
         responseArea.textContent = "Pensando...";
         responseArea.classList.add('thinking'); // ADICIONA ANIMAÇÃO
         sendBtn.classList.add('active');
+        listenBtn.style.display = "none";
         try {
             const res = await fetch(`${API_URL}/chat`, {
                 method: "POST",
@@ -71,11 +99,22 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             const data = await res.json();
             responseArea.textContent = data.resposta || "Sem resposta.";
-            responseArea.classList.remove('thinking'); // REMOVE ANIMAÇÃO
-            speak(data.resposta || "");
+            responseArea.classList.remove('thinking');
+            if (data.resposta) {
+                if (isIOS) {
+                    listenBtn.style.display = "block";
+                    listenBtn.onclick = () => speak(data.resposta);
+                } else {
+                    listenBtn.style.display = "none";
+                    speak(data.resposta);
+                }
+            } else {
+                listenBtn.style.display = "none";
+            }
         } catch (e) {
             responseArea.textContent = "Erro ao conectar ao assistente.";
             responseArea.classList.remove('thinking');
+            listenBtn.style.display = "none";
         }
         sendBtn.classList.remove('active');
     }
@@ -84,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function() {
     cancelBtn.addEventListener('click', () => {
         userInput.value = "";
         responseArea.textContent = "";
+        listenBtn.style.display = "none";
         if (window.speechSynthesis) window.speechSynthesis.cancel();
         if (recognition && recognition.abort) recognition.abort();
     });
@@ -96,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         responseArea.textContent = "Aguardando foto...";
         cameraBtn.classList.add('active');
+        listenBtn.style.display = "none";
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             const video = document.createElement('video');
@@ -122,9 +163,20 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             const data = await res.json();
             responseArea.textContent = data.caption || "Sem descrição.";
-            speak(data.caption || "");
+            if (data.caption) {
+                if (isIOS) {
+                    listenBtn.style.display = "block";
+                    listenBtn.onclick = () => speak(data.caption);
+                } else {
+                    listenBtn.style.display = "none";
+                    speak(data.caption);
+                }
+            } else {
+                listenBtn.style.display = "none";
+            }
         } catch (e) {
             responseArea.textContent = "Erro ao acessar a câmera.";
+            listenBtn.style.display = "none";
         }
         cameraBtn.classList.remove('active');
     });
