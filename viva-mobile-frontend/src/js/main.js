@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function() {
         responseArea.insertAdjacentElement('afterend', listenBtn);
     }
 
-    // Fala (Speech Synthesis)
     function speak(text) {
         if ('speechSynthesis' in window) {
             const utter = new SpeechSynthesisUtterance(text);
@@ -64,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const transcript = event.results[0][0].transcript;
             userInput.value = transcript;
             micBtn.classList.remove('active');
-            sendPergunta(); // envia automaticamente ao terminar de falar
+            sendPergunta();
         };
         recognition.onend = () => micBtn.classList.remove('active');
         recognition.onerror = () => micBtn.classList.remove('active');
@@ -73,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function() {
         micBtn.title = "Reconhecimento de voz não suportado";
     }
 
-    // Envio automático ao pressionar Enter
     userInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -81,14 +79,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Envio ao clicar no botão de enviar
     sendBtn.addEventListener('click', sendPergunta);
 
     async function sendPergunta() {
         const pergunta = userInput.value.trim();
         if (!pergunta) return;
         responseArea.textContent = "Pensando...";
-        responseArea.classList.add('thinking'); // ADICIONA ANIMAÇÃO
+        responseArea.classList.add('thinking');
         sendBtn.classList.add('active');
         listenBtn.style.display = "none";
         try {
@@ -119,7 +116,6 @@ document.addEventListener("DOMContentLoaded", function() {
         sendBtn.classList.remove('active');
     }
 
-    // Botão cancelar: limpa tudo e cancela fala/voz
     cancelBtn.addEventListener('click', () => {
         userInput.value = "";
         responseArea.textContent = "";
@@ -128,7 +124,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (recognition && recognition.abort) recognition.abort();
     });
 
-    // Captura de imagem e envio para API
     cameraBtn.addEventListener('click', async () => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             responseArea.textContent = "Câmera não suportada neste dispositivo.";
@@ -143,17 +138,14 @@ document.addEventListener("DOMContentLoaded", function() {
             video.srcObject = stream;
             await video.play();
 
-            // Captura frame
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Para a câmera
             stream.getTracks().forEach(track => track.stop());
 
-            // Envia para API
             const base64 = canvas.toDataURL('image/jpeg');
             responseArea.textContent = "Analisando imagem...";
             const res = await fetch(`${API_URL}/analisar-imagem`, {
