@@ -129,15 +129,26 @@ document.addEventListener("DOMContentLoaded", function() {
             responseArea.textContent = "Câmera não suportada neste dispositivo.";
             return;
         }
-        responseArea.textContent = "Aguardando foto...";
+        responseArea.textContent = "Tirando foto em 2...";
         cameraBtn.classList.add('active');
         listenBtn.style.display = "none";
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            // Solicita a câmera traseira se disponível
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" }
+            });
             const video = document.createElement('video');
             video.srcObject = stream;
             await video.play();
 
+            // Contagem regressiva na tela
+            responseArea.textContent = "Tirando foto em 2...";
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            responseArea.textContent = "Tirando foto em 1...";
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            responseArea.textContent = "Capturando...";
+
+            // Captura a foto
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
