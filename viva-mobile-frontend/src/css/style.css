@@ -172,13 +172,14 @@ h1::before {
 }
 
 .viva-input {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90vw;
+    position: static; /* ou relative */
+    bottom: unset;
+    left: unset;
+    transform: unset;
+    width: 100%;
     max-width: 440px;
-    z-index: 10;
+    margin: 18px 0 0 0;
+    z-index: unset;
     font-size: 1.2rem;
     background: rgba(24,24,40,0.85);
     color: #fff;
