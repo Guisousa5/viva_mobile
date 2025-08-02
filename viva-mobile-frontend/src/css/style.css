@@ -8,7 +8,7 @@ body {
     color: #fff;
     position: relative;
     min-height: 100vh;
-    overflow: hidden;
+    /* overflow: hidden; */ /* Removido para permitir rolagem */
 }
 #particles-bg {
     position: fixed;
