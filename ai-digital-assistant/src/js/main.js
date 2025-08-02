@@ -1,9 +1,5 @@
-// File: /viva-mobile-frontend/viva-mobile-frontend/src/js/main.js
-
-// Fala automática no Android/desktop, botão "Ouvir resposta" no iPhone/iPad
-
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "https://api-viva-vision.onrender.com"; // ajuste se necessário
+    const API_URL = "https://api-viva-vision.onrender.com"; // Adjust if necessary
 
     const micBtn = document.getElementById('mic-button');
     const cameraBtn = document.getElementById('camera-button');
@@ -13,10 +9,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const responseArea = document.getElementById('response-area');
     let listenBtn = document.getElementById('listen-btn');
 
-    // Detecta iOS
+    // Detect iOS
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
-    // Cria botão "Ouvir resposta" se não existir
+    // Create "Listen to response" button if it doesn't exist
     if (!listenBtn) {
         listenBtn = document.createElement('button');
         listenBtn.id = "listen-btn";
@@ -48,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Reconhecimento de voz (Speech Recognition)
+    // Speech Recognition
     let recognition;
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
@@ -129,86 +125,51 @@ document.addEventListener("DOMContentLoaded", function() {
             responseArea.textContent = "Câmera não suportada neste dispositivo.";
             return;
         }
+        responseArea.textContent = "Tirando foto em 2...";
         cameraBtn.classList.add('active');
         listenBtn.style.display = "none";
         try {
-            // Solicita a câmera traseira do celular se disponível
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: { ideal: "environment" } }
             });
             const video = document.createElement('video');
             video.srcObject = stream;
-            video.setAttribute('playsinline', 'true');
-            video.style.position = "fixed";
-            video.style.top = "0";
-            video.style.left = "0";
-            video.style.width = "100vw";
-            video.style.height = "100vh";
-            video.style.objectFit = "cover";
-            video.style.zIndex = "9999";
-            video.style.background = "#000";
             await video.play();
 
-            // Fala instrução ao abrir a câmera
-            speak("clique no botão abaixo");
+            responseArea.textContent = "Tirando foto em 2...";
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            responseArea.textContent = "Tirando foto em 1...";
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            responseArea.textContent = "Capturando...";
 
-            // Cria botão para capturar foto em tela cheia
-            const captureBtn = document.createElement('button');
-            captureBtn.textContent = "Capturar";
-            captureBtn.className = "viva-btn send";
-            captureBtn.style.position = "fixed";
-            captureBtn.style.bottom = "40px";
-            captureBtn.style.left = "50%";
-            captureBtn.style.transform = "translateX(-50%)";
-            captureBtn.style.zIndex = "10000";
-            captureBtn.style.fontSize = "1.2em";
-            captureBtn.style.padding = "16px 32px";
-            captureBtn.style.background = "#007bff";
-            captureBtn.style.color = "#fff";
-            captureBtn.style.borderRadius = "8px";
-            captureBtn.style.border = "none";
-            captureBtn.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
-            captureBtn.style.cursor = "pointer";
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            document.body.appendChild(video);
-            document.body.appendChild(captureBtn);
+            stream.getTracks().forEach(track => track.stop());
 
-            captureBtn.onclick = async () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                stream.getTracks().forEach(track => track.stop());
-
-                // Remove vídeo e botão da tela cheia
-                document.body.removeChild(video);
-                document.body.removeChild(captureBtn);
-
-                responseArea.innerHTML = "Analisando imagem...";
-
-                const base64 = canvas.toDataURL('image/jpeg');
-                const res = await fetch(`${API_URL}/analisar-imagem`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ image: base64 })
-                });
-                const data = await res.json();
-                responseArea.textContent = data.caption || "Sem descrição.";
-                if (data.caption) {
-                    if (isIOS) {
-                        listenBtn.style.display = "block";
-                        listenBtn.onclick = () => speak(data.caption);
-                    } else {
-                        listenBtn.style.display = "none";
-                        speak(data.caption);
-                    }
+            const base64 = canvas.toDataURL('image/jpeg');
+            responseArea.textContent = "Analisando imagem...";
+            const res = await fetch(`${API_URL}/analisar-imagem`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image: base64 })
+            });
+            const data = await res.json();
+            responseArea.textContent = data.caption || "Sem descrição.";
+            if (data.caption) {
+                if (isIOS) {
+                    listenBtn.style.display = "block";
+                    listenBtn.onclick = () => speak(data.caption);
                 } else {
                     listenBtn.style.display = "none";
+                    speak(data.caption);
                 }
-                cameraBtn.classList.remove('active');
-            };
+            } else {
+                listenBtn.style.display = "none";
+            }
         } catch (e) {
             responseArea.textContent = "Erro ao acessar a câmera.";
             listenBtn.style.display = "none";

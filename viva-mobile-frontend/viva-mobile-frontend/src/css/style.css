@@ -4,17 +4,10 @@ body {
     font-family: 'Montserrat', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: #10101a;
+    background: #0f0f0f;
     color: #fff;
-    position: relative;
     min-height: 100vh;
-    overflow: hidden;
-}
-#particles-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
+    overflow-x: hidden;
 }
 
 .curve-bg {
@@ -41,10 +34,6 @@ body {
     min-height: 100vh;
     padding: 32px 8px 16px 8px;
     box-sizing: border-box;
-    background: rgba(24, 24, 40, 0.55);
-    backdrop-filter: blur(12px) saturate(1.3);
-    border-radius: 32px;
-    box-shadow: 0 8px 36px 0 #5a5af744, 0 2px 0 #fff1;
 }
 
 h1 {
@@ -112,8 +101,8 @@ h1::before {
     justify-content: center;
     gap: 18px;
     width: 100%;
-    padding: 32px 0;
-    font-size: 1.5rem;
+    padding: 28px 0;
+    font-size: 1.35rem;
     font-weight: 700;
     border: none;
     border-radius: 48px;
@@ -126,7 +115,7 @@ h1::before {
         transform 0.12s cubic-bezier(.4,0,.2,1),
         box-shadow 0.25s,
         filter 0.2s;
-    outline: 3px solid #fff3;
+    outline: none;
     position: relative;
     overflow: hidden;
     filter: drop-shadow(0 0 0 #fff0);
@@ -172,21 +161,24 @@ h1::before {
 }
 
 .viva-input {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90vw;
+    width: 100%;
     max-width: 440px;
-    z-index: 10;
-    font-size: 1.2rem;
-    background: rgba(24,24,40,0.85);
-    color: #fff;
+    min-height: 60px;
+    margin: 0 auto 22px auto;
+    border: none;
     border-radius: 32px;
+    padding: 20px 26px;
+    font-size: 1.15rem;
+    background: #181828;
+    color: #fff;
     box-shadow: 0 2px 16px #5a5af71a;
+    outline: none;
+    resize: none;
+    transition: box-shadow 0.2s;
+    font-family: 'Montserrat', Arial, sans-serif;
 }
 .viva-input:focus {
-    box-shadow: 0 0 0 4px #00e0ffcc, 0 2px 16px #5a5af71a;
+    box-shadow: 0 0 0 4px #5a5af7cc, 0 2px 16px #5a5af71a;
 }
 
 .caption-feedback {
@@ -204,10 +196,9 @@ h1::before {
     word-break: break-word;
     letter-spacing: 0.5px;
     transition: box-shadow 0.2s;
-    background: rgba(24, 24, 40, 0.55);
-    backdrop-filter: blur(12px) saturate(1.3);
 }
 
+/* Bolha de "pensando" animada no feedback */
 .caption-feedback.thinking::before {
     content: '';
     display: inline-block;
@@ -332,11 +323,4 @@ h1::before {
     z-index: 2;
     mask: url('data:image/svg+xml;utf8,<svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><path d="M9 21l3-7 3 7"/><path d="M5 12h14"/></svg>') center/60% no-repeat;
     -webkit-mask: url('data:image/svg+xml;utf8,<svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><path d="M9 21l3-7 3 7"/><path d="M5 12h14"/></svg>') center/60% no-repeat;
-}
-
-.camera-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(16,16,32,0.88);
-    z-index: 9998;
 }

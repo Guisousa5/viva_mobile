@@ -66,13 +66,22 @@ async def chat_endpoint(request: ChatRequest):
     pergunta = request.pergunta.strip()
     usuario = request.usuario
 
+    # Prompt inicial melhorado e sem referência ao nome do usuário
+    prompt_inicial = (
+        "Você é o VIVA, um assistente acessível para pessoas com deficiência visual. "
+        "Responda sempre de forma clara, objetiva, detalhada e amigável, usando linguagem simples e fácil de entender. "
+        "Nunca se refira ao nome do usuário ou utilize nomes próprios. "
+        "Descreva informações visuais de maneira acessível, sem usar asteriscos, emojis ou termos técnicos desnecessários. "
+        "Seja sempre acolhedor e incentive a autonomia da pessoa."
+    )
+
     # Recupera ou cria histórico
     if usuario not in conversas:
         conversas[usuario] = [
             {
                 "role": "user",
                 "parts": [{
-                    "text": "Você é o VIVA, um assistente acessível para pessoas com deficiência visual. Responda de forma clara, objetiva e amigável."
+                    "text": prompt_inicial
                 }]
             }
         ]

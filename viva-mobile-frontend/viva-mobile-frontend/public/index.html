@@ -6,20 +6,8 @@
     <title>VIVA Vision</title>
     <link rel="stylesheet" href="../src/css/style.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <style>
-        /* Adicionado para animação do avatar */
-        .container > div > div {
-            animation: pulseAvatar 2.2s infinite cubic-bezier(.4,0,.2,1);
-        }
-        @keyframes pulseAvatar {
-            0%   { box-shadow: 0 0 24px #5a5af7cc; }
-            50%  { box-shadow: 0 0 48px #00e0ffcc; }
-            100% { box-shadow: 0 0 24px #5a5af7cc; }
-        }
-    </style>
 </head>
 <body>
-    <div id="particles-bg"></div>
     <div class="curve-bg">
         <svg viewBox="0 0 400 120" preserveAspectRatio="none">
             <path d="M0,0 Q200,80 400,0 L400,120 L0,120 Z" fill="#1a1a2e"/>
@@ -27,22 +15,8 @@
         </svg>
     </div>
     <main class="container">
-        <h1>VIVA Vision<br><span style="font-size:1.1rem;font-weight:400;color:#bdbdfc;">Assistente digital acessível e inteligente</span></h1>
-        <!-- Adicione logo após <main class="container"> -->
-        <div style="display:flex;justify-content:center;margin-bottom:10px;">
-            <div style="background:rgba(90,90,247,0.18);border-radius:50%;padding:10px;box-shadow:0 0 24px #5a5af7cc;">
-                <!-- Avatar SVG -->
-                <svg width="64" height="64" viewBox="0 0 64 64" aria-label="Avatar digital">
-                    <circle cx="32" cy="32" r="30" fill="#5a5af7" opacity="0.18"/>
-                    <ellipse cx="32" cy="32" rx="18" ry="20" fill="#fff"/>
-                    <ellipse cx="32" cy="38" rx="12" ry="8" fill="#5a5af7" opacity="0.13"/>
-                    <circle cx="32" cy="28" r="8" fill="#5a5af7"/>
-                    <circle cx="28" cy="26" r="2" fill="#fff"/>
-                    <circle cx="36" cy="26" r="2" fill="#fff"/>
-                    <path d="M28 34 Q32 38 36 34" stroke="#fff" stroke-width="2" fill="none"/>
-                </svg>
-            </div>
-        </div>
+        <h1>VIVA Vision</h1>
+        <p class="subtitle">Assistente digital acessível e inteligente</p>
         <section class="button-group">
             <button class="viva-btn voice" id="mic-button" aria-label="Falar com o Viva">
                 <span class="icon">
@@ -91,19 +65,5 @@
         </button>
     </main>
     <script src="../src/js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.1.0/tsparticles.bundle.min.js"></script>
-    <script>
-      tsParticles.load("particles-bg", {
-        background: { color: "#10101a" },
-        particles: {
-          number: { value: 38 },
-          color: { value: ["#5a5af7", "#00e0ff", "#8f5cff", "#00ffb8"] },
-          shape: { type: "circle" },
-          opacity: { value: 0.18 },
-          size: { value: 3 },
-          move: { enable: true, speed: 1.2 }
-        }
-      });
-    </script>
 </body>
 </html>
