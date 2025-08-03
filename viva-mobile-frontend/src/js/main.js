@@ -131,88 +131,105 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         cameraBtn.classList.add('active');
         listenBtn.style.display = "none";
-        try {
-            // Solicita a câmera traseira do celular se disponível
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: "environment" } }
-            });
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            video.setAttribute('playsinline', 'true');
-            video.style.position = "fixed";
-            video.style.top = "0";
-            video.style.left = "0";
-            video.style.width = "100vw";
-            video.style.height = "100vh";
-            video.style.objectFit = "cover";
-            video.style.zIndex = "9999";
-            video.style.background = "#000";
-            await video.play();
 
-            // Fala instrução ao abrir a câmera
-            speak("clique no botão abaixo");
+        let facingMode = "environment"; // padrão: traseira
 
-            // Cria botão para capturar foto em tela cheia
-            const captureBtn = document.createElement('button');
-            captureBtn.textContent = "Capturar";
-            captureBtn.className = "viva-btn send";
-            captureBtn.style.position = "fixed";
-            captureBtn.style.bottom = "40px";
-            captureBtn.style.left = "50%";
-            captureBtn.style.transform = "translateX(-50%)";
-            captureBtn.style.zIndex = "10000";
-            captureBtn.style.fontSize = "1.2em";
-            captureBtn.style.padding = "16px 32px";
-            captureBtn.style.background = "#007bff";
-            captureBtn.style.color = "#fff";
-            captureBtn.style.borderRadius = "8px";
-            captureBtn.style.border = "none";
-            captureBtn.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
-            captureBtn.style.cursor = "pointer";
-
-            document.body.appendChild(video);
-            document.body.appendChild(captureBtn);
-
-            captureBtn.onclick = async () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                stream.getTracks().forEach(track => track.stop());
-
-                // Remove vídeo e botão da tela cheia
-                document.body.removeChild(video);
-                document.body.removeChild(captureBtn);
-
-                responseArea.innerHTML = "Analisando imagem...";
-
-                const base64 = canvas.toDataURL('image/jpeg');
-                const res = await fetch(`${API_URL}/analisar-imagem`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ image: base64 })
+        // Função para abrir a câmera com o modo desejado
+        async function openCamera(mode) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: mode } }
                 });
-                const data = await res.json();
-                responseArea.textContent = data.caption || "Sem descrição.";
-                if (data.caption) {
-                    if (isIOS) {
-                        listenBtn.style.display = "block";
-                        listenBtn.onclick = () => speak(data.caption);
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.setAttribute('playsinline', 'true');
+                video.style.position = "fixed";
+                video.style.top = "0";
+                video.style.left = "0";
+                video.style.width = "100vw";
+                video.style.height = "100vh";
+                video.style.objectFit = "cover";
+                video.style.zIndex = "9999";
+                video.style.background = "#000";
+                await video.play();
+
+                speak("clique no botão abaixo");
+
+                // Botão para capturar foto
+                const captureBtn = document.createElement('button');
+                captureBtn.textContent = "Capturar";
+                captureBtn.className = "viva-btn send";
+                captureBtn.style.position = "fixed";
+                captureBtn.style.bottom = "40px";
+                captureBtn.style.left = "50%";
+                captureBtn.style.transform = "translateX(-50%)";
+                captureBtn.style.zIndex = "10000";
+
+                // Botão para alternar câmera
+                const switchBtn = document.createElement('button');
+                switchBtn.textContent = mode === "environment" ? "Usar câmera frontal" : "Usar câmera traseira";
+                switchBtn.className = "viva-btn camera";
+                switchBtn.style.position = "fixed";
+                switchBtn.style.bottom = "100px";
+                switchBtn.style.left = "50%";
+                switchBtn.style.transform = "translateX(-50%)";
+                switchBtn.style.zIndex = "10001";
+
+                document.body.appendChild(video);
+                document.body.appendChild(captureBtn);
+                document.body.appendChild(switchBtn);
+
+                switchBtn.onclick = () => {
+                    stream.getTracks().forEach(track => track.stop());
+                    document.body.removeChild(video);
+                    document.body.removeChild(captureBtn);
+                    document.body.removeChild(switchBtn);
+                    openCamera(mode === "environment" ? "user" : "environment");
+                };
+
+                captureBtn.onclick = async () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    stream.getTracks().forEach(track => track.stop());
+                    document.body.removeChild(video);
+                    document.body.removeChild(captureBtn);
+                    document.body.removeChild(switchBtn);
+
+                    responseArea.innerHTML = "Analisando imagem...";
+
+                    const base64 = canvas.toDataURL('image/jpeg');
+                    const res = await fetch(`${API_URL}/analisar-imagem`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ image: base64 })
+                    });
+                    const data = await res.json();
+                    responseArea.textContent = data.caption || "Sem descrição.";
+                    if (data.caption) {
+                        if (isIOS) {
+                            listenBtn.style.display = "block";
+                            listenBtn.onclick = () => speak(data.caption);
+                        } else {
+                            listenBtn.style.display = "none";
+                            speak(data.caption);
+                        }
                     } else {
                         listenBtn.style.display = "none";
-                        speak(data.caption);
                     }
-                } else {
-                    listenBtn.style.display = "none";
-                }
+                    cameraBtn.classList.remove('active');
+                };
+            } catch (e) {
+                responseArea.textContent = "Erro ao acessar a câmera.";
+                listenBtn.style.display = "none";
                 cameraBtn.classList.remove('active');
-            };
-        } catch (e) {
-            responseArea.textContent = "Erro ao acessar a câmera.";
-            listenBtn.style.display = "none";
+            }
         }
-        cameraBtn.classList.remove('active');
+
+        // Abre a câmera inicialmente com a traseira
+        openCamera(facingMode);
     });
 });
