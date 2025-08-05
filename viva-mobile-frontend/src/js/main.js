@@ -56,14 +56,19 @@ document.addEventListener("DOMContentLoaded", function() {
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
         micBtn.addEventListener('click', () => {
+            speak("Viva ouvindo");
             recognition.start();
             micBtn.classList.add('active');
         });
         recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
+            const transcript = event.results[0][0].transcript.trim().toLowerCase();
             userInput.value = transcript;
             micBtn.classList.remove('active');
-            sendPergunta();
+            if (transcript.includes("descrever")) {
+                cameraBtn.click(); // Abre a função descrever (câmera)
+            } else {
+                sendPergunta();
+            }
         };
         recognition.onend = () => micBtn.classList.remove('active');
         recognition.onerror = () => micBtn.classList.remove('active');
