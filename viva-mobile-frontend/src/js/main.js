@@ -153,41 +153,30 @@ document.addEventListener("DOMContentLoaded", function() {
                 video.style.background = "#000";
                 await video.play();
 
-                speak("clique no botão abaixo");
-
-                // Botão para capturar foto
-                const captureBtn = document.createElement('button');
-                captureBtn.textContent = "Capturar";
-                captureBtn.className = "viva-btn send";
-                captureBtn.style.position = "fixed";
-                captureBtn.style.bottom = "40px";
-                captureBtn.style.left = "50%";
-                captureBtn.style.transform = "translateX(-50%)";
-                captureBtn.style.zIndex = "10000";
+                speak("Toque em qualquer lugar para capturar.");
 
                 // Botão para alternar câmera
                 const switchBtn = document.createElement('button');
                 switchBtn.textContent = mode === "environment" ? "Usar câmera frontal" : "Usar câmera traseira";
                 switchBtn.className = "viva-btn camera";
                 switchBtn.style.position = "fixed";
-                switchBtn.style.bottom = "100px";
+                switchBtn.style.bottom = "40px";
                 switchBtn.style.left = "50%";
                 switchBtn.style.transform = "translateX(-50%)";
                 switchBtn.style.zIndex = "10001";
 
                 document.body.appendChild(video);
-                document.body.appendChild(captureBtn);
                 document.body.appendChild(switchBtn);
 
                 switchBtn.onclick = () => {
                     stream.getTracks().forEach(track => track.stop());
                     document.body.removeChild(video);
-                    document.body.removeChild(captureBtn);
                     document.body.removeChild(switchBtn);
                     openCamera(mode === "environment" ? "user" : "environment");
                 };
 
-                captureBtn.onclick = async () => {
+                // Captura foto ao clicar/tocar no vídeo
+                video.onclick = async () => {
                     const canvas = document.createElement('canvas');
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
@@ -196,7 +185,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
                     stream.getTracks().forEach(track => track.stop());
                     document.body.removeChild(video);
-                    document.body.removeChild(captureBtn);
                     document.body.removeChild(switchBtn);
 
                     responseArea.innerHTML = "Analisando imagem...";
