@@ -225,4 +225,8 @@ document.addEventListener("DOMContentLoaded", function() {
         // Abre a câmera inicialmente com a traseira
         openCamera(facingMode);
     });
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+    }
 });
