@@ -1,0 +1,16 @@
+{
+  "name": "VIVA Vision",
+  "short_name": "VIVA",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#10101a",
+  "theme_color": "#5a5af7",
+  "description": "Assistente digital acessível e inteligente",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48 64x64 128x128 256x256",
+      "type": "image/x-icon"
+    }
+  ]
+}
