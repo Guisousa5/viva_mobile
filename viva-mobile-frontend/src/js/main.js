@@ -229,4 +229,44 @@ document.addEventListener("DOMContentLoaded", function() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js');
     }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+
+        // Cria popup customizado
+        const pwaPopup = document.createElement('div');
+        pwaPopup.id = "pwa-popup";
+        pwaPopup.style.position = "fixed";
+        pwaPopup.style.bottom = "32px";
+        pwaPopup.style.left = "50%";
+        pwaPopup.style.transform = "translateX(-50%)";
+        pwaPopup.style.background = "rgba(24,24,40,0.95)";
+        pwaPopup.style.color = "#fff";
+        pwaPopup.style.padding = "18px 24px";
+        pwaPopup.style.borderRadius = "24px";
+        pwaPopup.style.boxShadow = "0 2px 24px #5a5af7cc";
+        pwaPopup.style.zIndex = "99999";
+        pwaPopup.style.display = "flex";
+        pwaPopup.style.flexDirection = "column";
+        pwaPopup.style.alignItems = "center";
+        pwaPopup.innerHTML = `
+            <span style="font-size:1.2rem;font-weight:700;margin-bottom:8px;">Instale o Viva Vision!</span>
+            <span style="font-size:1rem;margin-bottom:14px;">Adicione o assistente à sua tela inicial para acesso rápido.</span>
+            <button id="pwa-install-btn" class="viva-btn send" style="margin-bottom:8px;">Instalar</button>
+            <button id="pwa-close-btn" class="viva-btn cancel" style="background:#222;">Fechar</button>
+        `;
+        document.body.appendChild(pwaPopup);
+
+        document.getElementById('pwa-install-btn').onclick = async () => {
+            pwaPopup.style.display = "none";
+            deferredPrompt.prompt();
+            const choiceResult = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+        };
+        document.getElementById('pwa-close-btn').onclick = () => {
+            pwaPopup.style.display = "none";
+        };
+    });
 });
