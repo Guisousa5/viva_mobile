@@ -8,7 +8,7 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="manifest" href="manifest.json">
     <style>
-        /* Adicionado para animação do avatar */
+        /* Animação do avatar */
         .container > div > div {
             animation: pulseAvatar 2.2s infinite cubic-bezier(.4,0,.2,1);
         }
@@ -21,90 +21,66 @@
 </head>
 <body>
     <div id="particles-bg"></div>
+
     <div class="curve-bg">
         <svg viewBox="0 0 400 120" preserveAspectRatio="none">
             <path d="M0,0 Q200,80 400,0 L400,120 L0,120 Z" fill="#1a1a2e"/>
             <path d="M0,0 Q200,100 400,0 L400,120 L0,120 Z" fill="#5a5af7" fill-opacity="0.08"/>
         </svg>
     </div>
+
     <main class="container">
-        <h1>VIVA Vision<br><span style="font-size:1.1rem;font-weight:400;color:#bdbdfc;">Assistente digital acessível e inteligente</span></h1>
-        <!-- Adicione logo após <main class="container"> -->
-        <div style="display:flex;justify-content:center;margin-bottom:10px;">
-            <div style="background:rgba(90,90,247,0.18);border-radius:50%;padding:10px;box-shadow:0 0 24px #5a5af7cc;">
-                <!-- Avatar SVG -->
+        <div class="avatar-wrapper">
+            <div class="avatar-glow">
+                <!-- Avatar SVG (Olho) menor -->
                 <svg width="64" height="64" viewBox="0 0 64 64" aria-label="Avatar digital">
                     <circle cx="32" cy="32" r="30" fill="#5a5af7" opacity="0.18"/>
-                    <ellipse cx="32" cy="32" rx="18" ry="20" fill="#fff"/>
-                    <ellipse cx="32" cy="38" rx="12" ry="8" fill="#5a5af7" opacity="0.13"/>
-                    <circle cx="32" cy="28" r="8" fill="#5a5af7"/>
-                    <circle cx="28" cy="26" r="2" fill="#fff"/>
-                    <circle cx="36" cy="26" r="2" fill="#fff"/>
-                    <path d="M28 34 Q32 38 36 34" stroke="#fff" stroke-width="2" fill="none"/>
+                    <!-- Olho exterior -->
+                    <path d="M12 32s20-15 40 0-20 15-40 0z" fill="#fff"/>
+                    <!-- Íris -->
+                    <circle cx="32" cy="32" r="8" fill="#5a5af7"/>
+                    <!-- Pupila -->
+                    <circle cx="32" cy="32" r="4" fill="#fff"/>
+                    <!-- Brilho -->
+                    <circle cx="30" cy="30" r="2" fill="#fff" opacity="0.8"/>
                 </svg>
             </div>
         </div>
+
+        <h1>
+            VIVA Vision<br>
+            <span class="subtitle">Assistente digital acessível e inteligente</span>
+        </h1>
+
         <section class="button-group">
-            <button class="viva-btn voice" id="mic-button" aria-label="Falar com o Viva">
-                <span class="icon">
-                    <!-- Microphone SVG -->
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
-                </span>
-                Falar
-            </button>
-            <button class="viva-btn camera" id="camera-button" aria-label="Descrever ambiente">
-                <span class="icon">
-                    <!-- Camera SVG -->
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-3h6l2 3h3a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </span>
-                Descrever
-            </button>
-            <button class="viva-btn send" id="send-button" aria-label="Enviar texto">
-                <span class="icon">
-                    <!-- Send SVG -->
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                </span>
-                Enviar texto
-            </button>
-            <button class="viva-btn cancel" id="cancel-button" aria-label="Cancelar interação">
-                <span class="icon">
-                    <!-- X SVG -->
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
+            <button class="bubble-btn" id="mic-button" aria-label="Falar com o Viva">
+                <span class="bubble-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="2" width="6" height="12" rx="3"/>
+                        <path d="M5 10v2a7 7 0 0 0 14 0v-2"/>
+                        <line x1="12" y1="20" x2="12" y2="22"/>
+                        <line x1="8" y1="22" x2="16" y2="22"/>
                     </svg>
                 </span>
-                Cancelar
+                <span class="bubble-text">Falar</span>
             </button>
         </section>
-        <textarea id="user-input" class="viva-input" placeholder="Digite sua pergunta..."></textarea>
+
         <div id="response-area" class="caption-feedback" aria-live="polite"></div>
+
         <button id="listen-btn" class="viva-btn send" style="display:none;margin-top:10px;" aria-label="Ouvir resposta">
             <span class="icon">
-                <!-- Speaker SVG -->
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
                     <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
                 </svg>
             </span>
-            Ouvir resposta
+            <span class="bubble-text">Ouvir</span>
         </button>
     </main>
+
+    <script src="../src/js/particles.js"></script>
     <script src="../src/js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.1.0/tsparticles.bundle.min.js"></script>
-    <script>
-      tsParticles.load("particles-bg", {
-        background: { color: "#10101a" },
-        particles: {
-          number: { value: 38 },
-          color: { value: ["#5a5af7", "#00e0ff", "#8f5cff", "#00ffb8"] },
-          shape: { type: "circle" },
-          opacity: { value: 0.18 },
-          size: { value: 3 },
-          move: { enable: true, speed: 1.2 }
-        }
-      });
-    </script>
 </body>
 </html>
