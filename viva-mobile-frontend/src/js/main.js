@@ -3,39 +3,11 @@
 // Fala automática no Android/desktop, botão "Ouvir resposta" no iPhone/iPad
 
 document.addEventListener("DOMContentLoaded", function() {
-    const API_URL = "https://api-viva-vision.onrender.com"; // ajuste se necessário
-
+    const API_URL = "https://api-viva-vision.onrender.com";
     const micBtn = document.getElementById('mic-button');
-    const cameraBtn = document.getElementById('camera-button');
-    const sendBtn = document.getElementById('send-button');
-    const cancelBtn = document.getElementById('cancel-button');
-    const userInput = document.getElementById('user-input');
     const responseArea = document.getElementById('response-area');
     let listenBtn = document.getElementById('listen-btn');
-
-    // Detecta iOS
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-
-    // Cria botão "Ouvir resposta" se não existir
-    if (!listenBtn) {
-        listenBtn = document.createElement('button');
-        listenBtn.id = "listen-btn";
-        listenBtn.className = "viva-btn send";
-        listenBtn.style.display = "none";
-        listenBtn.style.marginTop = "10px";
-        listenBtn.setAttribute("aria-label", "Ouvir resposta");
-        listenBtn.innerHTML = `
-            <span class="icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-                </svg>
-            </span>
-            Ouvir resposta
-        `;
-        responseArea.insertAdjacentElement('afterend', listenBtn);
-    }
 
     function speak(text) {
         if ('speechSynthesis' in window) {
@@ -48,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Reconhecimento de voz (Speech Recognition)
+    // Reconhecimento de voz
     let recognition;
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
@@ -62,12 +34,13 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript.trim().toLowerCase();
-            userInput.value = transcript;
             micBtn.classList.remove('active');
-            if (transcript.includes("descrever")) {
-                cameraBtn.click(); // Abre a função descrever (câmera)
+            if (transcript.includes("frontal")) {
+                abrirCamera(true); // Abre a câmera frontal
+            } else if (transcript.includes("descrever")) {
+                abrirCamera(); // Abre a câmera traseira
             } else {
-                sendPergunta();
+                sendPergunta(transcript);
             }
         };
         recognition.onend = () => micBtn.classList.remove('active');
@@ -77,21 +50,10 @@ document.addEventListener("DOMContentLoaded", function() {
         micBtn.title = "Reconhecimento de voz não suportado";
     }
 
-    userInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendPergunta();
-        }
-    });
-
-    sendBtn.addEventListener('click', sendPergunta);
-
-    async function sendPergunta() {
-        const pergunta = userInput.value.trim();
+    async function sendPergunta(pergunta) {
         if (!pergunta) return;
         responseArea.textContent = "Pensando...";
         responseArea.classList.add('thinking');
-        sendBtn.classList.add('active');
         listenBtn.style.display = "none";
         try {
             const res = await fetch(`${API_URL}/chat`, {
@@ -118,155 +80,138 @@ document.addEventListener("DOMContentLoaded", function() {
             responseArea.classList.remove('thinking');
             listenBtn.style.display = "none";
         }
-        sendBtn.classList.remove('active');
     }
 
-    cancelBtn.addEventListener('click', () => {
-        userInput.value = "";
-        responseArea.textContent = "";
-        listenBtn.style.display = "none";
-        if (window.speechSynthesis) window.speechSynthesis.cancel();
-        if (recognition && recognition.abort) recognition.abort();
-    });
-
-    cameraBtn.addEventListener('click', async () => {
+    // Função para abrir a câmera e descrever
+    async function abrirCamera(frontal = false) {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             responseArea.textContent = "Câmera não suportada neste dispositivo.";
             return;
         }
-        cameraBtn.classList.add('active');
-        listenBtn.style.display = "none";
 
-        let facingMode = "environment"; // padrão: traseira
+        let facingMode = frontal ? "user" : "environment";
+        try {
+            // Overlay escuro
+            const overlay = document.createElement('div');
+            overlay.className = "camera-overlay";
+            overlay.style.position = "fixed";
+            overlay.style.inset = "0";
+            overlay.style.background = "rgba(16,16,32,0.88)";
+            overlay.style.zIndex = "9998";
+            document.body.appendChild(overlay);
 
-        // Função para abrir a câmera com o modo desejado
-        async function openCamera(mode) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: mode } }
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: facingMode } }
+            });
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.setAttribute('playsinline', 'true');
+            video.style.position = "fixed";
+            video.style.top = "0";
+            video.style.left = "0";
+            video.style.width = "100vw";
+            video.style.height = "100vh";
+            video.style.transform = "none";
+            video.style.objectFit = "cover";
+            video.style.zIndex = "9999";
+            video.style.borderRadius = "0";
+            video.style.boxShadow = "none";
+            await video.play();
+
+            // Mensagem de instrução como botão para mudar para câmera frontal
+            const instrucao = document.createElement('button');
+            instrucao.textContent = "Mude para câmera frontal clicando abaixo";
+            instrucao.style.position = "fixed";
+            instrucao.style.left = "50%";
+            instrucao.style.bottom = "48px";
+            instrucao.style.transform = "translateX(-50%)";
+            instrucao.style.background = "#222c";
+            instrucao.style.color = "#fff";
+            instrucao.style.padding = "12px 24px";
+            instrucao.style.borderRadius = "18px";
+            instrucao.style.fontSize = "1.15rem";
+            instrucao.style.zIndex = "10001";
+            instrucao.style.textAlign = "center";
+            instrucao.style.border = "none";
+            instrucao.style.cursor = "pointer";
+            document.body.appendChild(instrucao);
+
+            // Botão fechar
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = "Fechar";
+            closeBtn.style.position = "fixed";
+            closeBtn.style.top = "32px";
+            closeBtn.style.right = "32px";
+            closeBtn.style.zIndex = "10000";
+            closeBtn.style.padding = "12px 24px";
+            closeBtn.style.fontSize = "1.1rem";
+            closeBtn.style.borderRadius = "18px";
+            closeBtn.style.background = "#222";
+            closeBtn.style.color = "#fff";
+            closeBtn.style.border = "none";
+            closeBtn.style.cursor = "pointer";
+            closeBtn.onclick = () => {
+                stream.getTracks().forEach(track => track.stop());
+                document.body.removeChild(video);
+                document.body.removeChild(overlay);
+                document.body.removeChild(closeBtn);
+                document.body.removeChild(instrucao);
+                responseArea.textContent = "";
+            };
+
+            document.body.appendChild(video);
+            document.body.appendChild(closeBtn);
+
+            // Troca para câmera frontal ao clicar
+            instrucao.onclick = () => {
+                stream.getTracks().forEach(track => track.stop());
+                document.body.removeChild(video);
+                document.body.removeChild(overlay);
+                document.body.removeChild(closeBtn);
+                document.body.removeChild(instrucao);
+                abrirCamera(true); // Abre a câmera frontal
+            };
+
+            speak(instrucao.textContent);
+
+            video.onclick = async () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                stream.getTracks().forEach(track => track.stop());
+                document.body.removeChild(video);
+                document.body.removeChild(overlay);
+                document.body.removeChild(closeBtn);
+                document.body.removeChild(instrucao);
+
+                responseArea.innerHTML = "Analisando imagem...";
+
+                const base64 = canvas.toDataURL('image/jpeg');
+                const res = await fetch(`${API_URL}/analisar-imagem`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ image: base64 })
                 });
-                const video = document.createElement('video');
-                video.srcObject = stream;
-                video.setAttribute('playsinline', 'true');
-                video.style.position = "fixed";
-                video.style.top = "0";
-                video.style.left = "0";
-                video.style.width = "100vw";
-                video.style.height = "100vh";
-                video.style.objectFit = "cover";
-                video.style.zIndex = "9999";
-                video.style.background = "#000";
-                await video.play();
-
-                speak("Toque em qualquer lugar para capturar.");
-
-                // Botão para alternar câmera
-                const switchBtn = document.createElement('button');
-                switchBtn.textContent = mode === "environment" ? "Usar câmera frontal" : "Usar câmera traseira";
-                switchBtn.className = "viva-btn camera";
-                switchBtn.style.position = "fixed";
-                switchBtn.style.bottom = "40px";
-                switchBtn.style.left = "50%";
-                switchBtn.style.transform = "translateX(-50%)";
-                switchBtn.style.zIndex = "10001";
-
-                document.body.appendChild(video);
-                document.body.appendChild(switchBtn);
-
-                switchBtn.onclick = () => {
-                    stream.getTracks().forEach(track => track.stop());
-                    document.body.removeChild(video);
-                    document.body.removeChild(switchBtn);
-                    openCamera(mode === "environment" ? "user" : "environment");
-                };
-
-                // Captura foto ao clicar/tocar no vídeo
-                video.onclick = async () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                    stream.getTracks().forEach(track => track.stop());
-                    document.body.removeChild(video);
-                    document.body.removeChild(switchBtn);
-
-                    responseArea.innerHTML = "Analisando imagem...";
-
-                    const base64 = canvas.toDataURL('image/jpeg');
-                    const res = await fetch(`${API_URL}/analisar-imagem`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ image: base64 })
-                    });
-                    const data = await res.json();
-                    responseArea.textContent = data.caption || "Sem descrição.";
-                    if (data.caption) {
-                        if (isIOS) {
-                            listenBtn.style.display = "block";
-                            listenBtn.onclick = () => speak(data.caption);
-                        } else {
-                            listenBtn.style.display = "none";
-                            speak(data.caption);
-                        }
+                const data = await res.json();
+                responseArea.textContent = data.caption || "Sem descrição.";
+                if (data.caption) {
+                    if (isIOS) {
+                        listenBtn.style.display = "block";
+                        listenBtn.onclick = () => speak(data.caption);
                     } else {
                         listenBtn.style.display = "none";
+                        speak(data.caption);
                     }
-                    cameraBtn.classList.remove('active');
-                };
-            } catch (e) {
-                responseArea.textContent = "Erro ao acessar a câmera.";
-                listenBtn.style.display = "none";
-                cameraBtn.classList.remove('active');
-            }
+                } else {
+                    listenBtn.style.display = "none";
+                }
+            };
+        } catch (e) {
+            responseArea.textContent = "Erro ao acessar a câmera.";
+            listenBtn.style.display = "none";
         }
-
-        // Abre a câmera inicialmente com a traseira
-        openCamera(facingMode);
-    });
-
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
     }
-
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-
-        // Cria popup customizado
-        const pwaPopup = document.createElement('div');
-        pwaPopup.id = "pwa-popup";
-        pwaPopup.style.position = "fixed";
-        pwaPopup.style.bottom = "32px";
-        pwaPopup.style.left = "50%";
-        pwaPopup.style.transform = "translateX(-50%)";
-        pwaPopup.style.background = "rgba(24,24,40,0.95)";
-        pwaPopup.style.color = "#fff";
-        pwaPopup.style.padding = "18px 24px";
-        pwaPopup.style.borderRadius = "24px";
-        pwaPopup.style.boxShadow = "0 2px 24px #5a5af7cc";
-        pwaPopup.style.zIndex = "99999";
-        pwaPopup.style.display = "flex";
-        pwaPopup.style.flexDirection = "column";
-        pwaPopup.style.alignItems = "center";
-        pwaPopup.innerHTML = `
-            <span style="font-size:1.2rem;font-weight:700;margin-bottom:8px;">Instale o Viva Vision!</span>
-            <span style="font-size:1rem;margin-bottom:14px;">Adicione o assistente à sua tela inicial para acesso rápido.</span>
-            <button id="pwa-install-btn" class="viva-btn send" style="margin-bottom:8px;">Instalar</button>
-            <button id="pwa-close-btn" class="viva-btn cancel" style="background:#222;">Fechar</button>
-        `;
-        document.body.appendChild(pwaPopup);
-
-        document.getElementById('pwa-install-btn').onclick = async () => {
-            pwaPopup.style.display = "none";
-            deferredPrompt.prompt();
-            const choiceResult = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-        };
-        document.getElementById('pwa-close-btn').onclick = () => {
-            pwaPopup.style.display = "none";
-        };
-    });
 });
